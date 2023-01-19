@@ -1,0 +1,21 @@
+nfits = 30;
+x0=rand(nfits, 3);% preallocated generative parameters
+x0(:,2) = + -50*x0(:,2);   % beta
+x0(:,3) = + -10*x0(:,3);   % bias
+yy = nan(10,3); % recovered parameter values given a set of x0
+fval=nan(10,30); % % recovered function values given a set of x0
+retrive_val=nan(30,3);
+for n=1:30
+  for ii = 1:10 % run 10 fmincon trials on a given set of generative parameters
+     %options = optimoptions('fmincon','StepTolerance',1e-3);% regulating stepsize
+     fun = @(x) nLL_func2(x0(n,1),x0(n,2),x0(n,3),x(1),x(2),x(3),data);    
+     yy(ii,:)=fmincon(fun,[rand, + -50*rand, + -10*rand],[],[],[],[],[0 -50 -10],[1,50,10],[]);
+     % minimization
+     fval(ii,n)=nLL_func2(x0(n,1),x0(n,2),x0(n,3),yy(ii,1),yy(ii,2),yy(ii,3),data);% function value
+  end
+  retrive_val(n,:)=yy(find(fval(:,n)==min(fval(:,n))),:);
+  disp(n)
+  disp(yy(find(fval(:,n)==min(fval(:,n))),:))% show the yy with lowest nLL
+% we will then plot(a_generative,a_retrive) (beta_generative,beta_retrive)
+% (bias_generative, bias_retrive)
+end

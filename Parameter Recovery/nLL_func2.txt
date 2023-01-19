@@ -1,0 +1,23 @@
+function nLL2=nLL_func2(a0,beta0,bias0,a,beta,bias,data)
+% a0,beta0,bias0 are constant that are preallocated to generative fake data
+       
+        data_mdd = data; % replace data.wr with model's fake data    
+        data_mdd.wr = softmax_model(data.pright,data.pleft,a0,beta0,bias0);
+
+        [~, ~, ~, pLL] = softmax_model(data.pright,data.pleft,a,beta,bias);
+        pRR = 1-pLL;
+        wr = logical(data_mdd.wr);
+        wl = ~wr;
+        
+        p = nan(length(wr), 1);
+        p(wl) = pLL(wl); % p(wl) responds to the part of p which has the number 'true' in it same for pLL
+                                              
+        p(wr) = pRR(wr); % p(wr) responds to the part of p which has the number 'true' in it same for pRR
+        p = p+eps;
+        nLL2 = -sum(log(p));
+%       squared_distance=(psychometric_full(data,"G050")- psychometric_full(data_mdl, 'mdl')).^2;
+%       y1=sum(squared_distance(3:10,:)); % sum of squared difference. 
+%       disp(y1) 
+       
+
+       end
