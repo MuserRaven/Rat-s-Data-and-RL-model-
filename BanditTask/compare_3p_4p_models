@@ -1,0 +1,23 @@
+function [deltaaic, bf3, bf4] = compare_3p_4p_models
+%favors exclusion of lapse rate as of 2/23/21. cmc
+
+[bf4, nLL4] = fit_4pmodel_macro;
+[bf3, nLL3] = fit_3pmodel_macro;
+
+deltaaic = [];
+for m = 1:length(nLL4)
+    nparams = length(bf4{m}(1,:));
+    aic1 = 2.*nparams-2.*nLL4{m};
+    
+    nparams = length(bf3{m}(1,:));
+    aic2 = 2.*nparams-2.*nLL3{m};
+    
+    deltaaic = [deltaaic; aic2-aic1];
+end
+
+figure; hist(deltaaic, 30);
+[~, p] = ttest(deltaaic);
+title(strcat(['p=', num2str(p)]));
+set(gca, 'TickDir', 'out'); box off;
+xlabel('\Delta AIC: 3p - 4p');
+set(gcf, 'Color', [1 1 1]);
